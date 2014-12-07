@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/integration"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:context="http://www.springframework.org/schema/context"
+             xmlns:stream="http://www.springframework.org/schema/integration/stream"
+             xmlns:int = "http://www.springframework.org/schema/integration"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans
+                                 http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+                                 http://www.springframework.org/schema/context
+                                 http://www.springframework.org/schema/context/spring-context-3.2.xsd
+                                 http://www.springframework.org/schema/integration
+                                 http://www.springframework.org/schema/integration/spring-integration-3.0.xsd
+                                 http://www.springframework.org/schema/integration/stream
+                                 http://www.springframework.org/schema/integration/stream/spring-integration-stream-3.0.xsd">    
+	
+	<context:component-scan base-package="com.prapps.yavni" />
+    <channel id="yavni"/>
+    <channel id="home"/>
+    <channel id="yavniResp"/>
+    <channel id="error"/>
+    
+    
+    <channel id="LOAD_CITIES"/>
+    <channel id="DEFAULT_ACTION"/>  
+    
+	<int:bridge input-channel="yavniResp" output-channel="outResponse" />
+	
+	<!-- Entry to yavni application is this channel and forwarding to router->path-->
+    <int:header-value-router id="pathRouter" input-channel="yavni" header-name="path"/>
+    <!-- Now forwarding from path to other channels based on action parameter -->
+    <int:header-value-router id="actionRouter" input-channel="home" header-name="action"/>
+    
+    <int:service-activator input-channel="LOAD_CITIES" ref="configService" method="loadCities" output-channel="yavniResp" />
+    <int:service-activator input-channel="DEFAULT_ACTION" ref="configService" method="loadCities" output-channel="yavniResp" />
+    
+    <int:channel id="bank" />
+    <int:header-value-router id="actionRouter" input-channel="bank" header-name="action"/>
+    
+    <int:channel id="inventory" />
+    <int:chain input-channel="inventory" output-channel="yavniResp" >
+    	<int:transformer expression="Payload.get('bankId')"/>
+    	<int:service-activator ref="yavniService" method="getIssuableBloodByBankId" requires-reply="true" />
+    	<int:transformer ref="jsonWrapperTransformer" method="transform" />
+    </int:chain>
+    
+    <int:channel id="loadVerifiable" />
+    <int:chain input-channel="loadVerifiable" output-channel="yavniResp" >
+    	<int:transformer expression="Payload.get('bankId')"/>
+    	<int:service-activator ref="yavniService" method="getVerifiableBloodStocks" />
+    	<int:transformer ref="jsonWrapperTransformer" method="transform"/>
+    </int:chain>
+    
+    <int:channel id="loadApprpvable" />
+    <int:chain input-channel="loadApprpvable" output-channel="yavniResp" >
+    	<int:transformer expression="Payload.get('bankId')"/>
+    	<int:service-activator ref="yavniService" method="getApprovableBloodStocks" />
+    	<int:transformer ref="jsonWrapperTransformer" method="transform"/>
+    </int:chain>
+    
+    
+    <!-- Handling /yavni/users/* -->
+    <int:channel id="users" />
+    <int:chain input-channel="users" output-channel="yavniResp" >
+   		<int:enricher id="userEnricher" request-payload-expression="payload.user.userName" request-channel="findUserByUsernameChannel">
+		    <int:property name="context.user" expression="payload"/>
+		</int:enricher>
+    </int:chain>
+    <int:channel id="findUserByUsernameChannel" />
+	<int:service-activator ref="userDetailsService" method="getUserByName" input-channel="findUserByUsernameChannel" />
+    
+    
+    
+    
+    <int:channel id="userbank" />
+    <int:chain input-channel="userbank" output-channel="yavniResp" >
+    	<int:enricher id="userBankEnricher" request-payload-expression="new java.lang.Long(payload.user.userId)" request-channel="findUserBankByUserIdChannel">
+		    <int:property name="context.user" expression="payload"/>
+		</int:enricher>
+    </int:chain>
+     <int:channel id="findUserBankByUserIdChannel" />
+	<int:service-activator ref="yavniService" method="getYavniUserDetail" input-channel="findUserBankByUserIdChannel" />
+</beans:beans>
