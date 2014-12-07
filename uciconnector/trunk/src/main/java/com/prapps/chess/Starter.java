@@ -6,7 +6,7 @@ import javax.xml.bind.JAXBException;
 
 import com.prapps.chess.client.tcp.ui.TCPClientUtil;
 import com.prapps.chess.server.uci.tcp.AdminServer;
-import com.prapps.chess.server.uci.ui.MainFrame;
+import com.prapps.chess.server.uci.tcp.ui.MainFrame;
 
 public class Starter {
 

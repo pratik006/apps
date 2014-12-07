@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package com.prapps.chess.ui;
+package com.prapps.chess.server.uci.tcp.ui;
 
 import java.io.IOException;
 import java.util.logging.Logger;
@@ -12,8 +12,8 @@ import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
-import com.prapps.chess.uci.tcp.server.AdminServer;
-import com.prapps.chess.uci.tcp.server.Server;
+import com.prapps.chess.server.uci.tcp.AdminServer;
+import com.prapps.chess.server.uci.tcp.Server;
 
 /**
  *
