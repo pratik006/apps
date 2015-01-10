@@ -4,8 +4,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.logging.Logger;
 
+import com.prapps.chess.server.uci.thread.AbstractRunnable;
+import com.prapps.chess.server.uci.thread.State;
 
-public class AsyncReader implements Runnable {
+
+public class AsyncReader extends AbstractRunnable {
 
 	private static Logger LOG = Logger.getLogger(AsyncReader.class.getName());
 	
@@ -23,8 +26,9 @@ public class AsyncReader implements Runnable {
 	public void run() {
 		StringBuffer message = new StringBuffer();
 		String msg = null;
+		setState(State.Running);
 		try {
-			while (!stop && (msg = networkRW.readFromNetwork()) != null) {
+			while (!stop && State.Closed != getState() && (msg = networkRW.readFromNetwork()) != null) {
 				message.append(msg);
 				if(message.lastIndexOf("\n") != message.length()-1) {
 					message.append("\n");
@@ -34,7 +38,8 @@ public class AsyncReader implements Runnable {
 				os.flush();
 				message = new StringBuffer();
 			}
-		} catch (IOException e) {
+		} 
+		catch (IOException e) {
 			e.printStackTrace();
 			stop = true;
 			try {
@@ -44,10 +49,18 @@ public class AsyncReader implements Runnable {
 				e1.printStackTrace();
 			}	
 		}
+		finally {
+			try {
+				networkRW.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 		LOG.info("Closing "+getClass().getName());
 	}
 	
 	public void stop() {
 		stop = true;
+		setState(State.Closed);
 	}
 }

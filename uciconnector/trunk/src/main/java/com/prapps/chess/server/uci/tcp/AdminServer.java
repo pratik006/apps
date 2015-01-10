@@ -6,17 +6,19 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.ServerSocket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBException;
 
-import com.prapps.chess.common.engines.ProtocolConstants;
-import com.prapps.chess.common.engines.UCIUtil;
+import com.prapps.chess.server.uci.tcp.thread.InteractiveThread;
+import com.prapps.chess.server.uci.tcp.thread.MailerThread;
+import com.prapps.chess.server.uci.thread.State;
 import com.prapps.chess.uci.share.NetworkRW;
-import com.prapps.chess.uci.share.TCPNetworkRW;
 
 public class AdminServer {
 
@@ -31,12 +33,12 @@ public class AdminServer {
 	protected boolean engineStarted = false;
 	protected boolean connected = false;
 	protected Process p;
-	protected ServerSocket adminServerSocket;
+	//protected ServerSocket adminServerSocket;
 	protected NetworkRW adminNetworkRW;
 
 	protected String enginePath;
 	protected char[] password;
-	protected static List<EngineServer> servers = new ArrayList<EngineServer>();
+	protected static Map<String, EngineServer> servers = new HashMap<String, EngineServer>();
 	protected static List<Thread> serverThreads = new ArrayList<Thread>();
 	
 	protected Thread guiToEngineWriterThread;
@@ -65,7 +67,7 @@ public class AdminServer {
 		//protocol = config.getProperty("protocol");
 		LOG.info("protocol type: "+serverConfig.getProtocol());
 		LOG.info("admin port: "+adminPort);
-		adminServerSocket = new ServerSocket(adminPort);
+		//adminServerSocket = new ServerSocket(adminPort);
 		Thread mailer = new Thread(new MailerThread(serverConfig));mailer.start();
 		
 		new Thread(new Runnable() {
@@ -79,8 +81,8 @@ public class AdminServer {
 						if (line.startsWith(":q")) {
 							exit = true;
 							adminThread.interrupt();
-							for (EngineServer s : servers) {
-								s.stateClosing = true;
+							for (Entry<String, EngineServer> entry : servers.entrySet()) {
+								entry.getValue().stateClosing = true;
 							}							
 							break;
 						}
@@ -92,17 +94,14 @@ public class AdminServer {
 			}
 		}).start();
 		
-		adminThread = new Thread(new Runnable() {
+		adminThread = new Thread(new InteractiveThread(adminPort, this, serverConfig));adminThread.start();
+		/*adminThread = new Thread(new Runnable() {
 			public void run() {
 				try {
 					System.err.println("--------------------------------------");
 					LOG.info("waiting for connection..." + adminServerSocket.getLocalPort());
 					do {
 						adminNetworkRW = new TCPNetworkRW(adminServerSocket.accept());
-						/*
-						 * if(Thread.interrupted()) { throw new
-						 * InterruptedException("interrupting admin thread"); }
-						 */
 
 						LOG.info("Connection received from " + adminNetworkRW.getAddress().getHostName());
 						String request = null;
@@ -124,17 +123,22 @@ public class AdminServer {
 									LOG.info("shutting down...");
 									sentMsg = ProtocolConstants.CLOSE_MSG;
 									adminNetworkRW.writeToNetwork(sentMsg);
-									Process process = Runtime.getRuntime().exec("sudo poweroff");
-									byte[] buffer = new byte[1024];
-									int readLen = 0;
-									while((readLen = process.getErrorStream().read(buffer)) != -1)
-										System.out.println(new String(buffer,0, readLen));
-									
-									readLen = 0;
-									while((readLen = process.getInputStream().read(buffer)) != -1)
-										System.out.println(new String(buffer,0, readLen));
-									
-									process.getOutputStream().write("peed\n".getBytes());
+									StringBuffer output = new StringBuffer();
+									String cmd = "echo 'peed' | sudo -S poweroff";
+									Process process = Runtime.getRuntime().exec(new String[] {"/bin/sh", "-c", cmd});
+									try {
+										process.waitFor();
+									} catch (InterruptedException e) {
+										e.printStackTrace();
+									}
+									BufferedReader reader = 
+						                            new BufferedReader(new InputStreamReader(process.getInputStream()));
+						 
+						                        String line = "";			
+									while ((line = reader.readLine())!= null) {
+										output.append(line + "\n");
+									}
+									System.err.println(output);
 								}
 								LOG.finest("Writing to Socket: "+sentMsg);
 								adminNetworkRW.writeToNetwork(sentMsg);
@@ -143,21 +147,22 @@ public class AdminServer {
 					} while (!exit);
 				} catch (IOException e) {
 					e.printStackTrace();
-				} /*
-				 * catch (InterruptedException e) {
-				 * System.out.println("thread was interrupted");
-				 * e.printStackTrace(); }
-				 */
+				} 
 
 			}
 		}, "KeyboardListernerTherad");
-		adminThread.start();
+		adminThread.start();*/
 		
 		LOG.info("Admin server started");
 		/*while(!exit)
 			handshake();*/
 		initEngines();
 		LOG.fine("Admin server closed");
+	}
+	
+	public void restartEngine(String engineId) {
+		LOG.info("Restart Engine: "+engineId);
+		servers.get(engineId).setState(State.Closed);
 	}
 	
 	/*public Process startEngine() throws IOException {
@@ -185,20 +190,19 @@ public class AdminServer {
 			t.interrupt();
 		}*/
 		
-		for (EngineServer engineServer : servers) {
-			engineServer.close();
+		for (Entry<String, EngineServer> entry : servers.entrySet()) {
+			entry.getValue().close();
 		}
-		if(adminServerSocket != null) {
+		/*if(adminServerSocket != null) {
 			try {
 				adminServerSocket.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		}
-		System.exit(0);
+		}*/
 	}
 	
-	public void handshake() throws IOException {
+	/*public void handshake() throws IOException {
 		adminNetworkRW = new TCPNetworkRW(adminServerSocket.accept());
 		LOG.info("waiting for connection...");
 		LOG.info("Connection received from " + adminNetworkRW.getAddress().getHostName());
@@ -237,13 +241,15 @@ public class AdminServer {
 				adminNetworkRW.writeToNetwork(sentMsg);
 			}
 		} while (null != request && !"exit".equals(request));
-	}
+	}*/
 	
+	public static String externalServerUrl = null;
 	public static void main(String[] args) throws IOException, JAXBException {
-		System.getProperties().put("-Djava.util.logging.config.file", "h:/logging.properties");
+		//System.getProperties().put("-Djava.util.logging.config.file", "h:/logging.properties");
 		System.out.println(System.getProperty("java.home"));
 		LOG.info("Admin Server : Log initialized");
 		AdminServer server = new AdminServer("serverConfig.xml");
+		externalServerUrl = server.getServerConfig().getExternalServerUrl();
 		server.start();
 		LOG.info("Admin Server closed");
 	}
@@ -251,7 +257,7 @@ public class AdminServer {
 	private void initEngines() throws IOException {
 		for(Server server : serverConfig.getServers()) {
 			EngineServer engineServer = new EngineServer(server);
-			servers.add(engineServer);
+			servers.put(engineServer.getId(), engineServer);
 			Thread t = new Thread(engineServer, server.getName());
 			t.start();
 			serverThreads.add(t);
@@ -264,4 +270,7 @@ public class AdminServer {
 		return serverConfig;
 	}
 	
+	public Map<String, EngineServer> getServerDetails() {
+		return servers;
+	}
 }

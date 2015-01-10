@@ -44,47 +44,13 @@ public class ChessbaseClientAdapter {
 		config = new Properties();
 		config.load(new FileInputStream("src/test/resources/clientConfig.ini"));
 		adminPort = Integer.parseInt(config.getProperty("admin_port"));
-		/*Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
-			
-			@Override
-			public void run() {
-				try {
-					System.out.println("isConnected "+networkRW.isConnected());
-					System.out.println("isClosed "+networkRW.isClosed());
-					if(networkRW.isConnected() && !networkRW.isClosed())
-						close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}));*/
-		/*if(null != config.getProperty("auto_config") && "true".equalsIgnoreCase(config.getProperty("auto_config"))) {
-			try {
-				String params[] = UCIUtil.getIPFromMail(config.getProperty("clientMail"), config.getProperty("clientMailPass")).split(":");
-				targetAddress = InetAddress.getByName(UCIUtil.getParam(params, 0));				
-				targetPort = Integer.parseInt(UCIUtil.getParam(params, 1))+Integer.parseInt(config.getProperty("target_port"));
-			}
-			catch(Exception e) {
-				e.printStackTrace();
-			}
-		}
-		else {
-			targetAddress = InetAddress.getByName(config.getProperty("target_ip"));
-		}*/
+		
 		targetAddress = InetAddress.getByName(config.getProperty("target_ip"));
 		targetPort = adminPort + Integer.parseInt(config.getProperty("target_port"));
 		
 		LOG.info("server: "+targetAddress.getHostName()+"\tport: "+targetPort);	
 		//password = config.getProperty("secretKey").getBytes();
 		password = "test123".getBytes();
-		
-
-		/*if (!connect()) {
-			System.out.print("Cannot connect to server " + targetAddress + ":" + targetPort);
-		}
-		else {
-			LOG.finest("connected");
-		}*/
 
 		networkRW = new TCPNetworkRW(new Socket(targetAddress, targetPort));
 		cbWriter = new Thread(new Runnable() {
@@ -109,6 +75,7 @@ public class ChessbaseClientAdapter {
 				}
 				LOG.finest("Closing CB Writer");
 				try {
+					System.out.write("quit".getBytes());
 					consoleInputStream.close();
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -122,12 +89,6 @@ public class ChessbaseClientAdapter {
 				byte[] buffer = new byte[ProtocolConstants.BUFFER_SIZE];
 				try {
 					int readLen = buffer.length;
-					/*String line = null;
-					BufferedReader reader = new BufferedReader(new InputStreamReader(consoleInputStream));
-					while(!exit && (line = reader.readLine()) != null) {
-						LOG.finest("Chessbase: "+line);
-						networkRW.writeToNetwork(line);
-					}*/
 					while (!exit && (readLen = consoleInputStream.read(buffer, 0, buffer.length)) != -1) {
 						LOG.finest("Chessbase: "+new String(buffer, 0, readLen));
 						networkRW.writeToNetwork(Arrays.copyOfRange(buffer, 0, readLen));
@@ -146,13 +107,14 @@ public class ChessbaseClientAdapter {
 		cbReader.start();
 		cbWriter.start();
 
-		/*if (cbReader.isAlive())
-			cbReader.join();*/
 		if (cbWriter.isAlive())
 			cbWriter.join();
-
-		cbWriter.stop();
+		/*if (cbReader.isAlive())
+			cbReader.join();*/
+		cbReader.interrupt();
+		cbReader.stop();
 		LOG.finest("Closing CB Adapter");
+		System.exit(0);
 	}
 
 	public String udpToString(DatagramPacket p) {

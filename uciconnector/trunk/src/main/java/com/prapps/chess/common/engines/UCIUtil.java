@@ -40,6 +40,8 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.net.ssl.HttpsURLConnection;
 
+import com.prapps.chess.server.uci.tcp.AdminServer;
+
 import sun.net.www.content.text.PlainTextInputStream;
 
 public class UCIUtil {
@@ -164,7 +166,10 @@ public class UCIUtil {
 	    }*/
 		
 		try {
-			getHttpExternalIP();
+			System.out.println(getExternalIP());
+			getServerIP();
+			updateExternalIP("localhost", 1234);
+			getServerIP();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -205,7 +210,8 @@ public class UCIUtil {
 	}*/
 	
 	public static String getExternalIP() throws IOException {
-		URL whatismyip = new URL("http://agentgatech.appspot.com/");
+		//URL whatismyip = new URL("http://agentgatech.appspot.com/");
+		URL whatismyip = new URL(AdminServer.externalServerUrl+"?action=MY_IP");
 		URLConnection connection = whatismyip.openConnection();
 		connection.addRequestProperty("Protocol", "Http/1.1");
 	    connection.addRequestProperty("Connection", "keep-alive");
@@ -281,11 +287,11 @@ public class UCIUtil {
 		return -1;
 	}
 	
-	final static String publicUrl = "http://apps-pratiks.rhcloud.com/json/cs/ip";
+	//final static String publicUrl = "http://apps-pratiks.rhcloud.com/json/cs/ip";
 	public static void updateExternalIP(String ip, int port) {
 		final String USER_AGENT = "Mozilla/5.0";
 		try {
-			URL url = new URL(publicUrl+"?action=set&ip="+ip+":"+port);
+			URL url = new URL(AdminServer.externalServerUrl+"?action=SET&ip="+ip+"&port="+port);
 			HttpURLConnection conn =  (HttpURLConnection) url.openConnection();
 			conn.setRequestMethod("GET");
 			conn.setRequestProperty("User-Agent", USER_AGENT);
@@ -315,10 +321,10 @@ public class UCIUtil {
 		}
 	}
 	
-	public static String getHttpExternalIP() throws IOException {
+	public static String getServerIP() throws IOException {
 		final String USER_AGENT = "Mozilla/5.0";
 		String ip = null;
-		URL url = new URL(publicUrl+"?action=get");
+		URL url = new URL(AdminServer.externalServerUrl+"?action=GET");
 		//URL url = new URL("http://localhost:8080/json/cs/ip?action=get");
 		HttpURLConnection conn =  (HttpURLConnection) url.openConnection();
 		conn.setRequestMethod("GET");

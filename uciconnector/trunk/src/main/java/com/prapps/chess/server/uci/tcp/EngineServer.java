@@ -3,9 +3,12 @@ package com.prapps.chess.server.uci.tcp;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.util.logging.Logger;
 
+import com.prapps.chess.server.uci.thread.State;
 import com.prapps.chess.uci.share.AsyncReader;
 import com.prapps.chess.uci.share.AsyncWriter;
 import com.prapps.chess.uci.share.NetworkRW;
@@ -19,7 +22,11 @@ public class EngineServer extends Server implements Runnable {
 	public volatile boolean stateClosing = false;
 	private ServerSocket serverSocket;
 	private Thread guiToEngineWriterThread;
+	private AsyncReader reader;
+	private AsyncWriter writer;
 	private Thread engineToGUIWriterThread;
+	InputStream is;
+	OutputStream os;
 	
 	public EngineServer(Server server) throws IOException {
 		this.id = server.id;
@@ -27,38 +34,45 @@ public class EngineServer extends Server implements Runnable {
 		this.path = server.path;
 		this.command = server.command;
 		this.port = server.port;
-		this.running = server.running;
 		File file = new File(path);
 		if(!file.exists()) {
 			throw new FileNotFoundException("Invalid Engine Path"+path);
 		}
 		serverSocket = new ServerSocket(port);
+		setState(State.New);
 	}
 	
 	public void listen() throws IOException {		
 		LOG.info(name+" -> TCP server port: "+port);
 		LOG.info("waiting for connection on Engine port: "+serverSocket.getLocalPort());
 		LOG.info("Engine: "+path);
+		setState(State.Waiting);
 		networkRW = new TCPNetworkRW(serverSocket.accept());
+		setState(State.Connected);
 		LOG.fine("\n--------------------------------------Start Server ----------------------------------\n");
 		Process p = null;
 		if(!networkRW.isClosed() && networkRW.isConnected()) {
 			try {
 				p = startEngine(path, command);
-				guiToEngineWriterThread = new Thread(new AsyncReader(p.getOutputStream(), networkRW, stateClosing));
-				engineToGUIWriterThread = new Thread(new AsyncWriter(p.getInputStream(), networkRW, stateClosing));
+				os = p.getOutputStream();
+				is = p.getInputStream();
+				reader = new AsyncReader(os, networkRW, stateClosing);
+				writer = new AsyncWriter(is, networkRW, stateClosing);
+				guiToEngineWriterThread = new Thread(reader);
+				engineToGUIWriterThread = new Thread(writer);
 				// writer.setDaemon(true);
 				guiToEngineWriterThread.start();
 				engineToGUIWriterThread.start();
+				setState(State.Running);
 
 				if(guiToEngineWriterThread.isAlive())
 					guiToEngineWriterThread.join();
-				if(engineToGUIWriterThread.isAlive())
-					engineToGUIWriterThread.join();
-
+				p.destroyForcibly();
 				LOG.fine("Closing Engine on port "+networkRW.getPort());
-				networkRW.writeToNetwork("exit");
-				networkRW.close();
+				if(!networkRW.isConnected()) {
+					networkRW.writeToNetwork("exit");
+					networkRW.close();
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
 				networkRW.close();
@@ -67,6 +81,7 @@ public class EngineServer extends Server implements Runnable {
 			} finally {
 				if(null != p)
 					p.destroy();
+				super.setState(State.Closed);
 			}
 		}
 	}
@@ -84,16 +99,22 @@ public class EngineServer extends Server implements Runnable {
 
 	public void run() {
 		try {
-			while(!stateClosing)
+			while(State.Exit != getState())
 				listen();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		running = false;
+		setState(State.Closed);
 		LOG.info(name + "Engine Server closed");
 	}
 	
 	public void close() {
+		setState(State.Closed);
+		try {
+			is.close();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
 		if(null  != guiToEngineWriterThread)
 			guiToEngineWriterThread.interrupt();
 		if(null != engineToGUIWriterThread)
@@ -114,6 +135,26 @@ public class EngineServer extends Server implements Runnable {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	public void setState(State state) {
+		if (State.Closed == state) {
+			System.err.println("time to restart the server");
+			try {
+				networkRW.writeToNetwork("exit");
+				reader.setState(State.Closed);
+				writer.setState(State.Closed);
+				is.close();
+				os.write("quit\n".getBytes());
+				os.flush();
+				os.close();
+				networkRW.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		LOG.finest(this.id + " state changed to : " + state);
+		super.setState(state);
 	}
 
 }

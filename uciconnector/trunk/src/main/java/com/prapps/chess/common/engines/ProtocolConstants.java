@@ -17,6 +17,7 @@ public interface ProtocolConstants {
 	public static final String ENGINE_NAME = "engine_name";
 	public static final String AVAILABLE_ENGINES = "available_engines";
 	public static final String GET_AVAILABLE_ENGINES = "get_available_engines";
+	public static final String GET_ENGINE_STATUSES = "get_engine_statuses";
 	public static final String TEST_CONNECTION = "test_connection";
 	public static final String SUCCESSFUL_CONNECTION_MESSAGE = "success";
 	public static final String SUCCESSFUL_ENGINE_SELECTION_MESSAGE = "successfully_engine_selected";
@@ -42,4 +43,5 @@ public interface ProtocolConstants {
 	public static final String QUIT_MSG = "quit";
 	public static final String CLOSE_MSG = "close";
 	public static final String SHUT_DOWN = "shut_down";
+	public static final String RESTART_ENGINE = "restart_engine";
 }

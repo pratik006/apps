@@ -2,6 +2,8 @@ package com.prapps.chess.client.tcp.cb;
 
 import java.util.Arrays;
 
+import com.prapps.chess.server.uci.tcp.BasicServer;
+
 public class ServerDetails {
 
 	private boolean connected;
@@ -9,7 +11,7 @@ public class ServerDetails {
 	
 	public ServerDetails(String serversStr) {
 		String[] servers = serversStr.split(";");
-		this.servers = new String[servers.length][2];
+		this.servers = new String[servers.length][3];
 		int ctr = 0;
 		for(String row : servers) {
 			this.servers[ctr++] = row.split(":");

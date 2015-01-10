@@ -6,8 +6,10 @@ import java.util.Arrays;
 import java.util.logging.Logger;
 
 import com.prapps.chess.common.engines.ProtocolConstants;
+import com.prapps.chess.server.uci.thread.AbstractRunnable;
+import com.prapps.chess.server.uci.thread.State;
 
-public class AsyncWriter implements Runnable {
+public class AsyncWriter extends AbstractRunnable {
 
 	private static Logger LOG = Logger.getLogger(AsyncWriter.class.getName());
 	
@@ -24,7 +26,7 @@ public class AsyncWriter implements Runnable {
 		try {
 			if(null != is) {
 				int readLen = buffer.length;
-				while((readLen = is.read(buffer, 0, buffer.length)) != -1) {
+				while(State.Closed != getState() && (readLen = is.read(buffer, 0, buffer.length)) != -1) {
 					LOG.finer("Server: "+new String(buffer, 0, readLen));
 					networkRW.writeToNetwork(Arrays.copyOfRange(buffer, 0, readLen));
 				}
@@ -34,9 +36,17 @@ public class AsyncWriter implements Runnable {
 		}
 		LOG.info("Engine process closed");
 		try {
-			networkRW.writeToNetwork("exit");
+			if(networkRW.isConnected() && !networkRW.isClosed())
+				networkRW.writeToNetwork("exit");
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+		finally {
+			try {
+				networkRW.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 		LOG.info("closing writer");
 	}
