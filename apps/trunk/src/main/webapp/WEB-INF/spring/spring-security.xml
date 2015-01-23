@@ -11,6 +11,7 @@ xmlns:beans="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.
 	<http pattern="/login" security="none" />
 	<http pattern="/AccessDenied.jsp" security="none" />
 	<http pattern="/resources/**" security="none" />
+	<http pattern="/static/**" security="none" />
 	<http pattern="/json/core/**" security="none" />
 	<http pattern="/tutorials/**" security="none" />
 	<http pattern="/json/tutorials/**" security="none" />
