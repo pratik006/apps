@@ -20,6 +20,8 @@
 		up static resources in the ${webappRoot}/resources directory -->
 	<mvc:resources mapping="/resources/**" location="/resources/" order="1" />
 	<mvc:resources mapping="/static/tutorials/**" location="/static/tutorials/" />
+	<mvc:resources mapping="/static/travel/**" location="/static/travel/" />
+	<mvc:resources mapping="/sitemap.xml" location="/sitemap.xml" />
 
 	<bean id="viewResolver"
 		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
