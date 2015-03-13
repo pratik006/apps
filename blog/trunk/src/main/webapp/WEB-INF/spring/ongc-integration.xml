@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/integration"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:context="http://www.springframework.org/schema/context"
+             xmlns:stream="http://www.springframework.org/schema/integration/stream"
+             xmlns:int = "http://www.springframework.org/schema/integration"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans
+                                 http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+                                 http://www.springframework.org/schema/context
+                                 http://www.springframework.org/schema/context/spring-context-3.2.xsd
+                                 http://www.springframework.org/schema/integration
+                                 http://www.springframework.org/schema/integration/spring-integration-3.0.xsd
+                                 http://www.springframework.org/schema/integration/stream
+                                 http://www.springframework.org/schema/integration/stream/spring-integration-stream-3.0.xsd">    
+	
+    <!-- Configuration for ONGC app -->
+    <channel id="ongc"/>
+    <channel id="performance"/>
+    <int:bridge input-channel="ongcResp" output-channel="outResponse" />
+    
+    <int:header-value-router id="ongcPathRouter" input-channel="ongc" header-name="path"/>
+    <int:header-value-router id="ongcActionRouter" input-channel="performance" header-name="action"/>
+    
+    <channel id="addPerformance"/>
+    <int:chain input-channel="addPerformance" output-channel="ongcResp">
+    	<int:transformer expression="Payload.get('body')"/>
+    	<int:json-to-object-transformer type="com.prapps.ongc.domain.Performance" />
+	    <int:service-activator  ref="ongcService" method="addPerformance"  />
+    </int:chain>
+    
+    <channel id="getPerformances"/>
+    <int:chain input-channel="getPerformances" output-channel="ongcResp">
+    	<int:transformer expression="Payload.user"/>
+	    <int:service-activator  ref="ongcService" method="getPerformance"  />
+    </int:chain>
+    
+    <channel id="getUserInfo"/>
+    <int:chain input-channel="getUserInfo" output-channel="ongcResp">
+    	<int:transformer expression="Payload.get('body')"/>
+	    <int:service-activator  ref="ongcService" method="getUserInfo"  />
+    </int:chain>
+    
+    <int:channel id="getUserInfoChannel" />
+    <int:service-activator input-channel="getUserInfoChannel" ref="ongcService" method="getUserInfo" />
+    <int:channel id="getPerformanceChannel" />
+    <int:service-activator input-channel="getPerformanceChannel" ref="ongcService" method="getPerformance" />
+    
+    <channel id="playerDetail"/>
+    <int:chain input-channel="playerDetail" output-channel="ongcResp">
+    	<!-- <int:transformer expression="Payload.get('userName')"/> -->
+    	<int:enricher request-payload-expression="Payload.get('userName')" request-channel="getUserInfoChannel">
+	    	<int:property name="context.userInfo"  expression="payload"/>
+	    </int:enricher>
+	    <int:enricher request-payload-expression="Payload.get('userInfo')" request-channel="getPerformanceChannel">
+	    	<int:property name="context.playerPerformances"  expression="payload"/>
+	    </int:enricher>
+    </int:chain>
+    
+    <int:channel id="getParticipants" />
+    <int:service-activator input-channel="getParticipants" ref="ongcService" method="getPlayersList" />
+     
+</beans:beans>

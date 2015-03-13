@@ -1,0 +1,17 @@
+MongoDB 2.4 database added.  Please make note of these credentials:
+
+   Root User:     admin
+   Root Password: maeUzNPMReGl
+   Database Name: apps
+
+Connection URL: mongodb://$OPENSHIFT_MONGODB_DB_HOST:$OPENSHIFT_MONGODB_DB_PORT/
+
+
+use apps
+db.createUser(
+  {
+    user: "webuser",
+    pwd: "password",
+    roles: [ { role: "readWrite", db: "apps" } ]
+  }
+);
