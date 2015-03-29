@@ -6,7 +6,7 @@
 	protocol="tcp" 
 	password="password">
 	<adminPort>11110</adminPort>
-	<externalServerUrl>http://prapps.net63.net/chess</externalServerUrl>
+	<externalServerUrl>http://apps-pratiks.rhcloud.com/json/cs/ip</externalServerUrl>
 	<servers id="houdini" name="houdini" port="11111">
 		<path>/media/pratik/Programming/Chess/ChessEngines/Houdini_4_Pro_x64A-v1x/Houdini_4_Pro_x64A-v1x.exe</path>
 		<command>wine</command>
