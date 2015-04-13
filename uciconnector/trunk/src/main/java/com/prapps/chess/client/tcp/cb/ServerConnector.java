@@ -1,15 +1,15 @@
 package com.prapps.chess.client.tcp.cb;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.Properties;
 import java.util.logging.Logger;
 
-import javax.swing.table.DefaultTableModel;
-
-import com.prapps.chess.common.engines.ProtocolConstants;
-import com.prapps.chess.common.engines.UCIUtil;
+import com.prapps.chess.uci.share.ProtocolConstants;
 import com.prapps.chess.uci.share.TCPNetworkRW;
+import com.prapps.chess.uci.share.UCIUtil;
 
 public class ServerConnector {
 
@@ -19,6 +19,7 @@ public class ServerConnector {
 	private int port;
 	private boolean initialized;
 	private Socket socket;
+	private Properties config;
 	
 	private ServerConnector() {
 		
@@ -33,22 +34,39 @@ public class ServerConnector {
 	}
 	
 	private void init() throws IOException {
-		String resp = UCIUtil.getServerIP();
-		ip = resp.split(":")[0];
-		port = Integer.parseInt(resp.split(":")[1]);
+		config = new Properties();
+		config.load(new FileInputStream("clientConfig.ini"));
+		String externalServerUrl = config.getProperty("external_server_ip");
+		LOG.fine("externalServerUrl: "+externalServerUrl);
+		String ip = UCIUtil.getServerIP(externalServerUrl);
+		int port = Integer.parseInt(UCIUtil.getExternalParam(externalServerUrl, "port"));
 		try {
+			LOG.fine("Connecting to "+ip+":"+port);
 			socket = new Socket(ip, port);
 			if(!connect())
 				throw new IOException("cannot connect.");
 		}
 		catch(IOException ex) {
 			LOG.info(ex.getMessage());
-			ip = "localhost";
-			socket = new Socket(ip, port);
-			if(!connect())
-				throw new IOException("cannot connect.");
+			ip = UCIUtil.getExternalParam(externalServerUrl, "localip");
+			LOG.fine("Connecting to "+ip+":"+port);
+			try {
+				socket = new Socket(ip, port);
+				if(!connect())
+					throw new IOException("cannot connect.");
+			}
+			catch(IOException ex2) {
+				LOG.info(ex.getMessage());
+				ip = UCIUtil.getLocalIP();
+				LOG.fine("Connecting to "+ip+":"+port);
+				socket = new Socket(ip, port);
+				if(!connect())
+					throw new IOException("cannot connect.");
+			}
+			
 		}
 		initialized = true;
+		
 		LOG.info("connected");
 	}
 	

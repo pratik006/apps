@@ -2,8 +2,6 @@ package com.prapps.chess.client.tcp.cb;
 
 import java.util.Arrays;
 
-import com.prapps.chess.server.uci.tcp.BasicServer;
-
 public class ServerDetails {
 
 	private boolean connected;

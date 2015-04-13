@@ -7,8 +7,6 @@ import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
-import com.prapps.chess.common.engines.ProtocolConstants;
-
 public class Socket {
 	
 	private static Logger LOG = Logger.getLogger(Socket.class.getName());

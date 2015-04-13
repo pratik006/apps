@@ -6,8 +6,8 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.logging.Logger;
 
-import com.prapps.chess.common.engines.ProtocolConstants;
-import com.prapps.chess.common.engines.UCIUtil;
+import com.prapps.chess.uci.share.ProtocolConstants;
+import com.prapps.chess.uci.share.UCIUtil;
 
 public class AsyncDatagramReader implements Runnable {
 

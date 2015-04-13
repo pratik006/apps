@@ -11,17 +11,12 @@ import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.util.logging.Logger;
 
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
 import com.prapps.chess.client.tcp.cb.ClientController;
 import com.prapps.chess.client.tcp.cb.ServerConnector;
 import com.prapps.chess.client.tcp.cb.ServerDetails;
 import com.prapps.chess.client.tcp.ui.thread.EngineStatusThread;
-import com.prapps.chess.common.engines.ProtocolConstants;
-import com.prapps.chess.uci.share.NetworkRW;
 
 /**
  *

@@ -1,4 +1,4 @@
-package com.prapps.chess.common.engines;
+package com.prapps.chess.uci.share;
 
 public interface ProtocolConstants {
 	

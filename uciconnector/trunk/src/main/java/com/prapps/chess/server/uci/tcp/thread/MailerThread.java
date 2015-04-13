@@ -2,10 +2,10 @@ package com.prapps.chess.server.uci.tcp.thread;
 
 import java.util.logging.Logger;
 
-import com.prapps.chess.common.engines.UCIUtil;
 import com.prapps.chess.server.uci.tcp.ServerConfig;
 import com.prapps.chess.server.uci.thread.AbstractRunnable;
 import com.prapps.chess.server.uci.thread.State;
+import com.prapps.chess.uci.share.UCIUtil;
 
 public class MailerThread extends AbstractRunnable {
 
@@ -23,8 +23,8 @@ public class MailerThread extends AbstractRunnable {
 		try {
 			setState(State.Running);
 			String exIp = UCIUtil.getExternalIP();
-			UCIUtil.mailExternalIP(UCIUtil.getExternalIP() + ":admin_port=" + serverConfig.getAdminPort(), serverConfig.getFromMail(),
-					serverConfig.getMailPass(), serverConfig.getToMail());
+			/*UCIUtil.mailExternalIP(UCIUtil.getExternalIP() + ":admin_port=" + serverConfig.getAdminPort(), serverConfig.getFromMail(),
+					serverConfig.getMailPass(), serverConfig.getToMail());*/
 			while(getState() == State.Running) {
 				UCIUtil.updateExternalIP(exIp, serverConfig.getAdminPort());
 				LOG.info(UCIUtil.getExternalIP());

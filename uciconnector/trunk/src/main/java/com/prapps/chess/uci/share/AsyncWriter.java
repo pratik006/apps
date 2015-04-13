@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.logging.Logger;
 
-import com.prapps.chess.common.engines.ProtocolConstants;
 import com.prapps.chess.server.uci.thread.AbstractRunnable;
 import com.prapps.chess.server.uci.thread.State;
 

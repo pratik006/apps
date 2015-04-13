@@ -26,7 +26,6 @@ package com.prapps.udp.stun;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

@@ -8,8 +8,8 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.Properties;
 
-import com.prapps.chess.common.engines.ProtocolConstants;
-import com.prapps.chess.common.engines.UCIUtil;
+import com.prapps.chess.uci.share.ProtocolConstants;
+import com.prapps.chess.uci.share.UCIUtil;
 
 public class DatagramAdminServer implements ProtocolConstants {
 

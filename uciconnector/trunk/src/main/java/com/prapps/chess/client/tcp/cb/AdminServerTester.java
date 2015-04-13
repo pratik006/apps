@@ -1,11 +1,9 @@
 package com.prapps.chess.client.tcp.cb;
 
-import static com.prapps.chess.common.engines.ProtocolConstants.CLOSE_MSG;
-import static com.prapps.chess.common.engines.ProtocolConstants.CONN_SUCCESS_MSG;
-import static com.prapps.chess.common.engines.ProtocolConstants.QUIT_MSG;
-import static com.prapps.chess.common.engines.ProtocolConstants.SET_PROTOCOL_TCP;
-import static com.prapps.chess.common.engines.ProtocolConstants.START_MSG;
-import static com.prapps.chess.common.engines.ProtocolConstants.SUCCESS_SET_PROTOCOL_TCP;
+import static com.prapps.chess.uci.share.ProtocolConstants.CONN_SUCCESS_MSG;
+import static com.prapps.chess.uci.share.ProtocolConstants.SET_PROTOCOL_TCP;
+import static com.prapps.chess.uci.share.ProtocolConstants.START_MSG;
+import static com.prapps.chess.uci.share.ProtocolConstants.SUCCESS_SET_PROTOCOL_TCP;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

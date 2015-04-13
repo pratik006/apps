@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 
-import com.prapps.chess.common.engines.Engine;
-import com.prapps.chess.common.engines.ProtocolConstants;
+import com.prapps.chess.server.uci.tcp.Engine;
+import com.prapps.chess.uci.share.ProtocolConstants;
 
 
 public class DatagramEngineServer implements Runnable {

@@ -15,8 +15,8 @@ import java.util.logging.Logger;
 
 import javax.mail.MessagingException;
 
-import com.prapps.chess.common.engines.ProtocolConstants;
-import com.prapps.chess.common.engines.UCIUtil;
+import com.prapps.chess.uci.share.ProtocolConstants;
+import com.prapps.chess.uci.share.UCIUtil;
 
 public class DatagramServer implements Runnable {
 

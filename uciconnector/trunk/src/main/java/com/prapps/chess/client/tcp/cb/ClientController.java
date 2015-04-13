@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 import com.prapps.chess.client.tcp.ui.TCPClientUtil;
-import com.prapps.chess.common.engines.ProtocolConstants;
+import com.prapps.chess.uci.share.ProtocolConstants;
 
 public class ClientController {
 

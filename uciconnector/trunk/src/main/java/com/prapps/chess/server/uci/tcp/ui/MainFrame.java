@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
 
 import com.prapps.chess.server.uci.tcp.AdminServer;
 import com.prapps.chess.server.uci.tcp.Server;

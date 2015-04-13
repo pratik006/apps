@@ -6,10 +6,9 @@ import javax.swing.table.DefaultTableModel;
 
 import com.prapps.chess.client.tcp.cb.ServerConnector;
 import com.prapps.chess.client.tcp.cb.ServerDetails;
-import com.prapps.chess.common.engines.ProtocolConstants;
 import com.prapps.chess.server.uci.thread.AbstractRunnable;
 import com.prapps.chess.server.uci.thread.State;
-import com.prapps.chess.uci.share.NetworkRW;
+import com.prapps.chess.uci.share.ProtocolConstants;
 
 public class EngineStatusThread extends AbstractRunnable {
 

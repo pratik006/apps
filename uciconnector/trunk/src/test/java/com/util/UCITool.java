@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 import javax.mail.MessagingException;
 import javax.swing.JOptionPane;
 
-import com.prapps.chess.common.engines.UCIUtil;
+import com.prapps.chess.uci.share.UCIUtil;
 
 /**
  *

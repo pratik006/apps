@@ -7,7 +7,6 @@ import java.net.ServerSocket;
 import java.util.Map.Entry;
 import java.util.logging.Logger;
 
-import com.prapps.chess.common.engines.ProtocolConstants;
 import com.prapps.chess.server.uci.tcp.AdminServer;
 import com.prapps.chess.server.uci.tcp.EngineServer;
 import com.prapps.chess.server.uci.tcp.Server;
@@ -15,6 +14,7 @@ import com.prapps.chess.server.uci.tcp.ServerConfig;
 import com.prapps.chess.server.uci.thread.AbstractRunnable;
 import com.prapps.chess.server.uci.thread.State;
 import com.prapps.chess.uci.share.NetworkRW;
+import com.prapps.chess.uci.share.ProtocolConstants;
 import com.prapps.chess.uci.share.TCPNetworkRW;
 
 public class InteractiveThread extends AbstractRunnable {

@@ -1,4 +1,4 @@
-package com.prapps.chess.common.engines;
+package com.prapps.chess.server.uci.tcp;
 
 import java.io.IOException;
 import java.io.InputStream;

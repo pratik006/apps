@@ -1,11 +1,11 @@
 package com.prapps.chess.client.tcp.cb;
 
-import static com.prapps.chess.common.engines.ProtocolConstants.CLOSE_MSG;
-import static com.prapps.chess.common.engines.ProtocolConstants.CONN_SUCCESS_MSG;
-import static com.prapps.chess.common.engines.ProtocolConstants.QUIT_MSG;
-import static com.prapps.chess.common.engines.ProtocolConstants.SET_PROTOCOL_TCP;
-import static com.prapps.chess.common.engines.ProtocolConstants.START_MSG;
-import static com.prapps.chess.common.engines.ProtocolConstants.SUCCESS_SET_PROTOCOL_TCP;
+import static com.prapps.chess.uci.share.ProtocolConstants.CLOSE_MSG;
+import static com.prapps.chess.uci.share.ProtocolConstants.CONN_SUCCESS_MSG;
+import static com.prapps.chess.uci.share.ProtocolConstants.QUIT_MSG;
+import static com.prapps.chess.uci.share.ProtocolConstants.SET_PROTOCOL_TCP;
+import static com.prapps.chess.uci.share.ProtocolConstants.START_MSG;
+import static com.prapps.chess.uci.share.ProtocolConstants.SUCCESS_SET_PROTOCOL_TCP;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -18,9 +18,10 @@ import java.util.Arrays;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import com.prapps.chess.common.engines.ProtocolConstants;
 import com.prapps.chess.uci.share.NetworkRW;
+import com.prapps.chess.uci.share.ProtocolConstants;
 import com.prapps.chess.uci.share.TCPNetworkRW;
+import com.prapps.chess.uci.share.UCIUtil;
 
 public class ChessbaseClientAdapter {
 
@@ -40,19 +41,36 @@ public class ChessbaseClientAdapter {
 	private byte[] password;
 
 	private void listen() throws FileNotFoundException, IOException, InterruptedException {
-		
 		config = new Properties();
-		config.load(new FileInputStream("src/test/resources/clientConfig.ini"));
-		adminPort = Integer.parseInt(config.getProperty("admin_port"));
+		config.load(new FileInputStream("clientConfig.ini"));
+		LOG.finest("Property config file loaded");
+		String networkPref = config.getProperty("network_pref");
+		if("local".equals(networkPref)) {
+			LOG.info("trying local ip");
+			try {
+				tryLocalIP();
+			}
+			catch(IOException ex) {
+				ex.printStackTrace();
+				tryManual();
+			}
+		}
+		else if("external".equals(networkPref)) {
+			LOG.info("trying external ip");
+			try {
+				tryExternalServerApproach();
+			}
+			catch(IOException ex) {
+				ex.printStackTrace();
+				tryManual();
+			}
+		}
+		else {
+			LOG.info("trying manual ip");
+			tryManual();
+		}		
 		
-		targetAddress = InetAddress.getByName(config.getProperty("target_ip"));
-		targetPort = adminPort + Integer.parseInt(config.getProperty("target_port"));
-		
-		LOG.info("server: "+targetAddress.getHostName()+"\tport: "+targetPort);	
-		//password = config.getProperty("secretKey").getBytes();
 		password = "test123".getBytes();
-
-		networkRW = new TCPNetworkRW(new Socket(targetAddress, targetPort));
 		cbWriter = new Thread(new Runnable() {
 
 			public void run() {
@@ -164,6 +182,47 @@ public class ChessbaseClientAdapter {
 		LOG.finest("\n-------------------------------Starting UCIClient ---------------------------------------\n");
 		ChessbaseClientAdapter adapter = new ChessbaseClientAdapter();
 		adapter.listen();
+	}
+	
+	private void tryExternalServerApproach() throws IOException {
+		String localip = null;
+		LOG.info("Trying to read IP from "+config.getProperty("external_server_ip"));
+		String extServerUrl = config.getProperty("external_server_ip");
+		LOG.fine("extServerUrl: "+extServerUrl);
+		String ip = UCIUtil.getExternalParam(extServerUrl, "ip");
+		localip = UCIUtil.getExternalParam(extServerUrl, "localip");			
+		String adminPortStr = UCIUtil.getExternalParam(extServerUrl, "port");
+		LOG.fine("ip: "+ip+"\tport: "+adminPortStr);
+		adminPort = Integer.parseInt(adminPortStr);
+		targetPort = adminPort + Integer.parseInt(config.getProperty("target_port"));
+		targetAddress = InetAddress.getByName(ip);
+		networkRW = new TCPNetworkRW(new Socket(targetAddress, targetPort));
+		config.setProperty("target_ip", ip);
+	}
+	
+	private void tryLocalIP() throws IOException {
+		String localip = "192.168.1.11";		
+		//check if local area network server is available
+		InetAddress localAddress = InetAddress.getByName(localip);//server address is fixed at 192.168.1.11
+		LOG.info("Trying with local ip");
+		LOG.fine("localip: "+localip);
+		targetAddress = InetAddress.getByName(localip);
+		adminPort = Integer.parseInt(config.getProperty("admin_port"));
+		targetPort = adminPort + Integer.parseInt(config.getProperty("target_port"));
+		LOG.info("server: "+targetAddress.getHostName()+"\tport: "+targetPort);
+		networkRW = new TCPNetworkRW(new Socket(targetAddress, targetPort));
+	}
+	
+	private void tryManual() throws IOException {
+		LOG.info("Trying to read from property file, expecting manual configuration");
+		LOG.finest("adminPort: "+config.getProperty("admin_port"));
+		LOG.finest("target_ip: "+config.getProperty("target_ip"));
+		LOG.finest("target_port: "+config.getProperty("target_port"));
+		adminPort = Integer.parseInt(config.getProperty("admin_port"));
+		targetPort = adminPort + Integer.parseInt(config.getProperty("target_port"));
+		targetAddress = InetAddress.getByName(config.getProperty("target_ip"));
+		LOG.info("server: "+targetAddress.getHostName()+"\tport: "+targetPort);
+		networkRW = new TCPNetworkRW(new Socket(targetAddress, targetPort));
 	}
 
 }

@@ -1,4 +1,4 @@
-package com.prapps.chess.common.engines;
+package com.prapps.chess.uci.share;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,11 +7,12 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.HttpCookie;
 import java.net.HttpURLConnection;
+import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
-import java.net.ProtocolException;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.UnknownHostException;
@@ -23,6 +24,7 @@ import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -38,11 +40,8 @@ import javax.mail.Store;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import javax.net.ssl.HttpsURLConnection;
 
 import com.prapps.chess.server.uci.tcp.AdminServer;
-
-import sun.net.www.content.text.PlainTextInputStream;
 
 public class UCIUtil {
 
@@ -164,16 +163,7 @@ public class UCIUtil {
 	    {
 	    	e.printStackTrace();
 	    }*/
-		
-		try {
-			System.out.println(getExternalIP());
-			getServerIP();
-			updateExternalIP("localhost", 1234);
-			getServerIP();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		System.out.println(getLocalIP());
 	}
 	
 	public static void mailExternalIP(String ip, final String fromMailAddress, final String password, final String toMailAddress) {
@@ -212,6 +202,19 @@ public class UCIUtil {
 	public static String getExternalIP() throws IOException {
 		//URL whatismyip = new URL("http://agentgatech.appspot.com/");
 		URL whatismyip = new URL(AdminServer.externalServerUrl+"?action=MY_IP");
+		URLConnection connection = whatismyip.openConnection();
+		connection.addRequestProperty("Protocol", "Http/1.1");
+	    connection.addRequestProperty("Connection", "keep-alive");
+	    connection.addRequestProperty("Keep-Alive", "1000");
+	    connection.addRequestProperty("User-Agent", "Web-Agent");
+	    BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+	    String ip = in.readLine(); //you get the IP as a String
+	    return ip;
+	}
+	
+	public static String getExternalParam(String externalUrl, String param) throws IOException {
+		//URL whatismyip = new URL("http://agentgatech.appspot.com/");
+		URL whatismyip = new URL(externalUrl+"?action=get&param="+param);
 		URLConnection connection = whatismyip.openConnection();
 		connection.addRequestProperty("Protocol", "Http/1.1");
 	    connection.addRequestProperty("Connection", "keep-alive");
@@ -290,8 +293,10 @@ public class UCIUtil {
 	//final static String publicUrl = "http://apps-pratiks.rhcloud.com/json/cs/ip";
 	public static void updateExternalIP(String ip, int port) {
 		final String USER_AGENT = "Mozilla/5.0";
+
+		String localIP = UCIUtil.getLocalIP();
 		try {
-			URL url = new URL(AdminServer.externalServerUrl+"?action=SET&ip="+ip+"&port="+port);
+			URL url = new URL(AdminServer.externalServerUrl+"?action=SET&ip="+ip+"&port="+port+"&localip="+localIP);
 			HttpURLConnection conn =  (HttpURLConnection) url.openConnection();
 			conn.setRequestMethod("GET");
 			conn.setRequestProperty("User-Agent", USER_AGENT);
@@ -321,30 +326,30 @@ public class UCIUtil {
 		}
 	}
 	
-	public static String getServerIP() throws IOException {
-		final String USER_AGENT = "Mozilla/5.0";
-		String ip = null;
-		URL url = new URL(AdminServer.externalServerUrl+"?action=GET");
-		//URL url = new URL("http://localhost:8080/json/cs/ip?action=get");
-		HttpURLConnection conn =  (HttpURLConnection) url.openConnection();
-		conn.setRequestMethod("GET");
-		conn.setRequestProperty("User-Agent", USER_AGENT);
-		conn.setRequestProperty("Content-length", "0");
-        conn.setUseCaches(false);
-        conn.setAllowUserInteraction(false);
-		conn.connect();
-		int responseCode = conn.getResponseCode();
-		System.out.println("Response Code : " + responseCode);
-		BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-		String inputLine;
-		StringBuffer response = new StringBuffer();	 
-		while ((inputLine = in.readLine()) != null) {
-			response.append(inputLine);
+	public static String getLocalIP() {
+		Enumeration<NetworkInterface> interfaces;
+		try {
+			interfaces = NetworkInterface.getNetworkInterfaces();
+			while (interfaces.hasMoreElements()){
+			    NetworkInterface current = interfaces.nextElement();
+			    if (!current.isUp() || current.isLoopback() || current.isVirtual()) continue;
+			    Enumeration<InetAddress> addresses = current.getInetAddresses();
+			    while (addresses.hasMoreElements()){
+			        InetAddress current_addr = addresses.nextElement();
+			        if (current_addr.isLoopbackAddress()) continue;
+			        if(current_addr instanceof Inet4Address) {
+			        	return current_addr.getHostAddress();
+			        }
+			    }
+			}
+		} catch (SocketException e1) {
+			e1.printStackTrace();
 		}
-		in.close();	 
-		System.out.println("response: "+response.toString());
-		ip = response.toString();
-		return ip;
+		return null;
+	}
+	
+	public static String getServerIP(String externalUrl) throws IOException {
+		return getExternalParam(externalUrl, "ip");
 	}
 
 }
