@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.prapps.chess</groupId>
 	<artifactId>uci-connector</artifactId>
@@ -16,11 +17,14 @@
 			<artifactId>log4j</artifactId>
 			<version>1.2.17</version>
 		</dependency>
-		<!-- <dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-			<version>2.2.4</version>
-		</dependency> -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.4</version>
+		</dependency>
+
+		<!-- <dependency> <groupId>com.google.code.gson</groupId> <artifactId>gson</artifactId> 
+			<version>2.2.4</version> </dependency> -->
 
 	</dependencies>
 
@@ -40,7 +44,7 @@
 						<artifactId>maven-compiler-plugin</artifactId>
 						<version>3.1</version>
 						<configuration>
-							<source  />
+							<source />
 							<target />
 						</configuration>
 					</plugin>
@@ -108,7 +112,7 @@
 				</plugins>
 			</build>
 		</profile>
-		
+
 		<profile>
 			<id>client</id>
 			<build>
@@ -119,7 +123,7 @@
 						<artifactId>maven-compiler-plugin</artifactId>
 						<version>3.1</version>
 						<configuration>
-							<source  />
+							<source />
 							<target />
 						</configuration>
 					</plugin>

@@ -296,7 +296,7 @@ public class UCIUtil {
 
 		String localIP = UCIUtil.getLocalIP();
 		try {
-			URL url = new URL(AdminServer.externalServerUrl+"?action=SET&ip="+ip+"&port="+port+"&localip="+localIP);
+			URL url = new URL(AdminServer.externalServerUrl+"?action=set&ip="+ip+"&port="+port+"&localip="+localIP);
 			HttpURLConnection conn =  (HttpURLConnection) url.openConnection();
 			conn.setRequestMethod("GET");
 			conn.setRequestProperty("User-Agent", USER_AGENT);

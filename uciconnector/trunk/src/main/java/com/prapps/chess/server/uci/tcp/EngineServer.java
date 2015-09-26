@@ -67,7 +67,7 @@ public class EngineServer extends Server implements Runnable {
 
 				if(guiToEngineWriterThread.isAlive())
 					guiToEngineWriterThread.join();
-				p.destroyForcibly();
+				p.destroy();
 				LOG.fine("Closing Engine on port "+networkRW.getPort());
 				if(!networkRW.isConnected()) {
 					networkRW.writeToNetwork("exit");
