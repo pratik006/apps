@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Blog Post - Google Guice Quick Start Guide</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="../../../bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="../css/blog-post.css" rel="stylesheet">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+<style>
+img {width: 100%; height: auto;}
+.travelImg{text-align: center;}
+</style>
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="container">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="../index.html">Pratik's Blog</a>
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li>
+                        <a href="#">About</a>
+                    </li>
+                    <li>
+                        <a href="#">Services</a>
+                    </li>
+                    <li>
+                        <a href="#">Contact</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
+
+    <!-- Page Content -->
+    <div class="container">
+
+        <div class="row">
+
+            <!-- Blog Post Content Column -->
+            <div class="col-lg-8">
+
+                <!-- Blog Post -->
+
+                <!-- Title -->
+                <h1>Google Guice Quick Start Guide</h1>
+
+                <!-- Author -->
+                <p class="lead">
+                    by <a href="#">Pratik Sengupta</a>
+                </p>
+
+                <hr>
+
+                <!-- Date/Time -->
+                <p><span class="glyphicon glyphicon-time"></span> Posted on August 24, 2013 at 9:00 PM</p>
+
+                <hr>
+
+                <!-- Post Content -->
+                <p class="lead">Hello World for Guice</p>
+
+                <p>Google Guice is an open source software framework which provides support for dependency injection using annotations to configure Java objects.
+                </p>
+                <p>Following is an example for beginners. Source code for this can be downloaded at the end of this tutorial.</p>
+
+                <hr>
+                    <h3>
+                        <a id="user-content-1-add-dependencies" class="anchor"
+                            href="#1-add-dependencies" aria-hidden="true"><span
+                            class="octicon octicon-link"></span></a>1. Add dependencies
+                    </h3>
+
+                    <hr>
+
+                    <p>File : pom.xml</p>
+
+                    <div class="highlight highlight-xml">
+                        <pre>&lt;<span class="pl-ent">project</span> <span class="pl-e">xmlns</span>=<span
+                                class="pl-s1"><span class="pl-pds">"</span>http://maven.apache.org/POM/4.0.0<span
+                                class="pl-pds">"</span></span> 
+                    <span class="pl-e">xmlns</span><span class="pl-e">:</span><span
+                                class="pl-e">xsi</span>=<span class="pl-s1"><span
+                                class="pl-pds">"</span>http://www.w3.org/2001/XMLSchema-instance<span
+                                class="pl-pds">"</span></span>
+                    <span class="pl-e">xsi</span><span class="pl-e">:</span><span
+                                class="pl-e">schemaLocation</span>=<span class="pl-s1"><span
+                                class="pl-pds">"</span>http://maven.apache.org/POM/4.0.0 </span>
+                <span class="pl-s1">    http://maven.apache.org/maven-v4_0_0.xsd<span
+                                class="pl-pds">"</span></span>&gt;
+                  &lt;<span class="pl-ent">modelVersion</span>&gt;4.0.0&lt;/<span
+                                class="pl-ent">modelVersion</span>&gt;
+                  &lt;<span class="pl-ent">groupId</span>&gt;com.prapps.tutorial&lt;/<span
+                                class="pl-ent">groupId</span>&gt;
+                  &lt;<span class="pl-ent">artifactId</span>&gt;google-guice&lt;/<span
+                                class="pl-ent">artifactId</span>&gt;
+                  &lt;<span class="pl-ent">packaging</span>&gt;jar&lt;/<span
+                                class="pl-ent">packaging</span>&gt;
+                  &lt;<span class="pl-ent">version</span>&gt;1.0.0-SNAPSHOT&lt;/<span
+                                class="pl-ent">version</span>&gt;
+                  &lt;<span class="pl-ent">name</span>&gt;google-guice&lt;/<span
+                                class="pl-ent">name</span>&gt;
+                  &lt;<span class="pl-ent">url</span>&gt;http://maven.apache.org&lt;/<span
+                                class="pl-ent">url</span>&gt;
+
+                  &lt;<span class="pl-ent">dependencies</span>&gt;
+                        &lt;<span class="pl-ent">dependency</span>&gt;
+                            &lt;<span class="pl-ent">groupId</span>&gt;log4j&lt;/<span
+                                class="pl-ent">groupId</span>&gt;
+                            &lt;<span class="pl-ent">artifactId</span>&gt;log4j&lt;/<span
+                                class="pl-ent">artifactId</span>&gt;
+                            &lt;<span class="pl-ent">version</span>&gt;1.2.17&lt;/<span
+                                class="pl-ent">version</span>&gt;
+                        &lt;/<span class="pl-ent">dependency</span>&gt;
+                        &lt;<span class="pl-ent">dependency</span>&gt;
+                            &lt;<span class="pl-ent">groupId</span>&gt;junit&lt;/<span
+                                class="pl-ent">groupId</span>&gt;
+                            &lt;<span class="pl-ent">artifactId</span>&gt;junit&lt;/<span
+                                class="pl-ent">artifactId</span>&gt;
+                            &lt;<span class="pl-ent">version</span>&gt;4.11&lt;/<span
+                                class="pl-ent">version</span>&gt;
+                        &lt;/<span class="pl-ent">dependency</span>&gt;
+                        &lt;<span class="pl-ent">dependency</span>&gt;
+                            &lt;<span class="pl-ent">groupId</span>&gt;com.google.inject&lt;/<span
+                                class="pl-ent">groupId</span>&gt;
+                            &lt;<span class="pl-ent">artifactId</span>&gt;guice&lt;/<span
+                                class="pl-ent">artifactId</span>&gt;
+                            &lt;<span class="pl-ent">version</span>&gt;3.0&lt;/<span
+                                class="pl-ent">version</span>&gt;
+                        &lt;/<span class="pl-ent">dependency</span>&gt;
+                    &lt;/<span class="pl-ent">dependencies</span>&gt;
+                &lt;/<span class="pl-ent">project</span>&gt;</pre>
+                    </div>
+
+                    <h3>
+                        <a id="user-content-2-create-the-project-structure" class="anchor"
+                            href="#2-create-the-project-structure" aria-hidden="true"><span
+                            class="octicon octicon-link"></span></a>2. Create the project structure
+                    </h3>
+
+                    <p>
+                        <img
+                            src="/resources/images/tutorials/project_structure-google-guice.png"
+                            alt="project structure">
+                    </p>
+
+                    <h3>
+                        <a id="user-content-3-vo-class" class="anchor" href="#3-vo-class"
+                            aria-hidden="true"><span class="octicon octicon-link"></span></a>3.
+                        VO class
+                    </h3>
+
+                    <pre>
+                        <code>package com.prapps.tutorial.guice.vo;
+
+                public class Employee {
+
+                    private long id;
+                    private String name;
+                    private double salary;
+
+                    public long getId() {
+                        return id;
+                    }
+                    public void setId(long id) {
+                        this.id = id;
+                    }
+                    public String getName() {
+                        return name;
+                    }
+                    public void setName(String name) {
+                        this.name = name;
+                    }
+                    public double getSalary() {
+                        return salary;
+                    }
+                    public void setSalary(double salary) {
+                        this.salary = salary;
+                    }
+                }
+                </code>
+                    </pre>
+
+                    <h3>
+                        <a id="user-content-4-service-interface" class="anchor"
+                            href="#4-service-interface" aria-hidden="true"><span
+                            class="octicon octicon-link"></span></a>4. Service Interface
+                    </h3>
+
+                    <pre>
+                        <code>package com.prapps.tutorial.guice.service.api;
+
+                import java.util.Collection;
+
+                import com.prapps.tutorial.guice.vo.Employee;
+
+                public interface EmployeeService {
+
+                    void addEmployee(Employee employee);
+
+                    Collection&lt;Employee&gt; searchEmployeeByName(String name);
+
+                    Employee searchEmployeeById(Long id);
+                }
+                </code>
+                    </pre>
+
+                    <h3>
+                        <a id="user-content-5-serviceimpl-class" class="anchor"
+                            href="#5-serviceimpl-class" aria-hidden="true"><span
+                            class="octicon octicon-link"></span></a>5. ServiceImpl class
+                    </h3>
+
+                    <pre>
+                        <code>package com.prapps.tutorial.guice.service.impl;
+
+                import java.util.ArrayList;
+                import java.util.Collection;
+                import java.util.HashMap;
+                import java.util.Map;
+                import java.util.Map.Entry;
+
+                import com.prapps.tutorial.guice.service.api.EmployeeService;
+                import com.prapps.tutorial.guice.vo.Employee;
+
+                public class EmployeeServiceImpl implements EmployeeService {
+
+                    private Map&lt;Long, Employee&gt; employeeMap = new HashMap&lt;Long, Employee&gt;();
+
+                    public void addEmployee(Employee employee) {
+                        employeeMap.put(employee.getId(), employee);
+                    }
+
+                    public Collection&lt;Employee&gt; searchEmployeeByName(String name) {
+                        Collection&lt;Employee&gt; result = new ArrayList&lt;Employee&gt;();
+                        for(Entry&lt;Long, Employee&gt; entry : employeeMap.entrySet()) {
+                            if(entry.getValue().getName().equals(name)) {
+                                result.add(entry.getValue());
+                            }
+                        }
+                        return result;
+                    }
+
+                    public Employee searchEmployeeById(Long id) {
+                        return employeeMap.get(id);
+                    }
+
+                }
+                </code>
+                    </pre>
+
+                    <h3>
+                        <a id="user-content-6-logger-class" class="anchor"
+                            href="#6-logger-class" aria-hidden="true"><span
+                            class="octicon octicon-link"></span></a>6. Logger class
+                    </h3>
+
+                    <pre>
+                        <code>package com.prapps.tutorial.guice.aop;
+
+                import org.aopalliance.intercept.MethodInterceptor;
+                import org.aopalliance.intercept.MethodInvocation;
+                import org.apache.log4j.Logger;
+
+                public class LogAspect implements MethodInterceptor {
+
+                    private static final Logger LOG = Logger.getLogger(LogAspect.class);
+
+                    public Object invoke(MethodInvocation invocation) throws Throwable {
+                        LOG.trace(invocation.getMethod());
+                        if(null != invocation.getArguments() &amp;&amp; invocation.getArguments().length &gt; 0) {
+                            for(Object arg : invocation.getArguments()) {
+                                LOG.trace(arg.getClass() + " -- " + arg);
+                            }
+                        }
+                        Object response = invocation.proceed();
+                        LOG.trace(response);
+                        return response;
+                    }
+
+
+                }
+                </code>
+                    </pre>
+
+                    <h3>
+                        <a id="user-content-7-injector-class" class="anchor"
+                            href="#7-injector-class" aria-hidden="true"><span
+                            class="octicon octicon-link"></span></a>7. Injector class
+                    </h3>
+
+                    <pre>
+                        <code>package com.prapps.tutorial.guice.ioc;
+
+                import com.google.inject.AbstractModule;
+                import com.google.inject.Singleton;
+                import com.google.inject.matcher.Matchers;
+                import com.prapps.tutorial.guice.aop.LogAspect;
+                import com.prapps.tutorial.guice.service.api.EmployeeService;
+                import com.prapps.tutorial.guice.service.impl.EmployeeServiceImpl;
+
+                public class EmployeeAppInjector extends AbstractModule {
+
+                    @Override
+                    protected void configure() {
+                        bind(EmployeeService.class).to(EmployeeServiceImpl.class).in(Singleton.class);
+                        LogAspect logAspect = new LogAspect();
+                        requestInjection(logAspect);
+                        bindInterceptor(Matchers.subclassesOf(EmployeeService.class), Matchers.any(), logAspect);
+                    }
+                }
+                </code>
+                    </pre>
+
+                    <h3>
+                        <a id="user-content-8-tester-class" class="anchor"
+                            href="#8-tester-class" aria-hidden="true"><span
+                            class="octicon octicon-link"></span></a>8. Tester class
+                    </h3>
+
+                    <pre>
+                        <code>package com.prapps.tutorial.guice;
+
+                import java.util.Collection;
+
+                import org.junit.Before;
+                import org.junit.Test;
+
+                import com.google.inject.Guice;
+                import com.google.inject.Injector;
+                import com.prapps.tutorial.guice.ioc.EmployeeAppInjector;
+                import com.prapps.tutorial.guice.service.api.EmployeeService;
+                import com.prapps.tutorial.guice.vo.Employee;
+
+                public class Tester {
+
+                    private EmployeeService employeeService; 
+
+                    @Before public void setUp() {
+                        Injector injector = Guice.createInjector(new EmployeeAppInjector());        
+                        employeeService = injector.getInstance(EmployeeService.class);
+                    }
+
+                    @Test
+                    public void testAddEmployee() {
+                        Employee employee = new Employee();
+                        employee.setId(101l);
+                        employee.setName("Souvik Majumder");
+                        employee.setSalary(1234.0d);
+                        employeeService.addEmployee(employee);
+
+                        employee = new Employee();
+                        employee.setId(102l);
+                        employee.setName("Pratik Sengupta");
+                        employee.setSalary(4321.0d);
+                        employeeService.addEmployee(employee);
+
+                        employee = new Employee();
+                        employee.setId(103l);
+                        employee.setName("Debojit Chatterjee");
+                        employee.setSalary(8675.0d);
+                        employeeService.addEmployee(employee);
+                    }
+
+                    @Test
+                    public void testSearchEmployee() {
+                        testAddEmployee();
+
+                        Employee employee = employeeService.searchEmployeeById(101l);
+                        assert("Souvik Majumder".equals(employee.getName()));
+                        assert(1234d == employee.getSalary());
+                    }
+
+                    @Test
+                    public void testSearchEmployeeByName() {
+                        testAddEmployee();
+
+                        Collection&lt;Employee&gt; employees = employeeService.searchEmployeeByName("Pratik Sengupta");
+                        assert(1 == employees.size());
+
+                        Employee employee = employees.iterator().next();
+                        assert("Pratik Sengupta".equals(employee.getName()));
+                        assert(4321d == employee.getSalary());
+                    }
+                }
+                </code>
+                    </pre>
+
+                    <h3>
+                        <a id="user-content-6-log4jxml" class="anchor" href="#6-log4jxml"
+                            aria-hidden="true"><span class="octicon octicon-link"></span></a>6.
+                        Log4j.xml
+                    </h3>
+
+                    <pre>
+                        <code>&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+                &lt;!DOCTYPE log4j:configuration SYSTEM "log4j.dtd"&gt;
+                &lt;log4j:configuration debug="true"
+                                     xmlns:log4j='http://jakarta.apache.org/log4j/'&gt;
+
+                   &lt;appender name="consoleAppender" class="org.apache.log4j.ConsoleAppender"&gt;
+                      &lt;layout class="org.apache.log4j.PatternLayout"&gt;
+                         &lt;param name="ConversionPattern" value="%d{dd MMM yyyy HH:mm:ss} %5p %c{1} - %m%n"/&gt;
+                      &lt;/layout&gt;
+                   &lt;/appender&gt;
+
+                   &lt;appender name="fileAppender" class="org.apache.log4j.RollingFileAppender"&gt;
+                      &lt;param name="append" value="false"/&gt;
+                      &lt;param name="file" value="out/learning.log"/&gt;
+                      &lt;layout class="org.apache.log4j.PatternLayout"&gt;
+                         &lt;param name="ConversionPattern" value="%d{ABSOLUTE} %-5p [%c{1}] %m%n"/&gt;
+                      &lt;/layout&gt;
+                   &lt;/appender&gt;
+
+                    &lt;logger name="com.prapps.tutorial" additivity="false"&gt;  
+                        &lt;level value="trace" /&gt;
+                        &lt;appender-ref ref="consoleAppender" /&gt;
+                    &lt;/logger&gt; 
+
+                   &lt;root&gt;
+                      &lt;level value="INFO"/&gt;
+                      &lt;appender-ref ref="consoleAppender"/&gt;
+                      &lt;appender-ref ref="fileAppender"/&gt;
+                   &lt;/root&gt;
+
+                &lt;/log4j:configuration&gt;
+                </code>
+                    </pre>
+                    
+                    Source Code Available at github: 
+                    <ul>
+                        <li>git clone url - <input id="gitCloneUrl" type="text" value="https://github.com/pratik006/tutorials.git" style="width: 250px;" onfocus="selectAll(this);"/></li>
+                        <li><a href="https://github.com/pratik006/tutorials">Download Page</a></li>
+                        <li><a href="https://github.com/pratik006/tutorials/tree/master/google-guice">Browse</a></li>
+                    </ul>
+                
+               
+
+        
+
+                <!-- Blog Comments -->
+
+                <!-- Comments Form -->
+                <div class="well">
+                    <h4>Leave a Comment:</h4>
+                    <form role="form">
+                        <div class="form-group">
+                            <div style="width: 40%; float: left;">
+                                 Your Name: <input type="text" id="name" name="name" class="form-control" style="width: 90%;" />
+                            </div>
+                            <div class="form-group" style="width: 40%; float: left;">
+                                Your Email: <input type="text" id="email" name="email" class="form-control" style="width: 90%;" />
+                            </div>
+                            
+                            <textarea class="form-control" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+                </div>
+
+                <hr>
+
+                <!-- Posted Comments -->
+
+                <!-- Comment -->
+                <div class="media">
+                    <a class="pull-left" href="#">
+                        <img class="media-object" src="http://placehold.it/64x64" alt="">
+                    </a>
+                    <div class="media-body">
+                        <h4 class="media-heading">Start Bootstrap
+                            <small>August 25, 2014 at 9:30 PM</small>
+                        </h4>
+                        Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
+                    </div>
+                </div>
+
+                <!-- Comment -->
+                <div class="media">
+                    <a class="pull-left" href="#">
+                        <img class="media-object" src="http://placehold.it/64x64" alt="">
+                    </a>
+                    <div class="media-body">
+                        <h4 class="media-heading">Start Bootstrap
+                            <small>August 25, 2014 at 9:30 PM</small>
+                        </h4>
+                        Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
+                        <!-- Nested Comment -->
+                        <div class="media">
+                            <a class="pull-left" href="#">
+                                <img class="media-object" src="http://placehold.it/64x64" alt="">
+                            </a>
+                            <div class="media-body">
+                                <h4 class="media-heading">Nested Start Bootstrap
+                                    <small>August 25, 2014 at 9:30 PM</small>
+                                </h4>
+                                Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin commodo. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
+                            </div>
+                        </div>
+                        <!-- End Nested Comment -->
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Blog Sidebar Widgets Column -->
+            <div class="col-md-4">
+
+                <!-- Blog Search Well -->
+                <div class="well">
+                    <h4>Blog Search</h4>
+                    <div class="input-group">
+                        <input type="text" class="form-control">
+                        <span class="input-group-btn">
+                            <button class="btn btn-default" type="button">
+                                <span class="glyphicon glyphicon-search"></span>
+                        </button>
+                        </span>
+                    </div>
+                    <!-- /.input-group -->
+                </div>
+
+                <!-- Blog Categories Well -->
+                <div class="well">
+                    <h4>Blog Categories</h4>
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <ul class="list-unstyled">
+                                <li><a href="#">Travel</a>
+                                </li>
+                                <li><a href="#">Programming</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <!--div class="col-lg-6">
+                            <ul class="list-unstyled">
+                                <li><a href="#">Category Name</a>
+                                </li>
+                                <li><a href="#">Category Name</a>
+                                </li>
+                                <li><a href="#">Category Name</a>
+                                </li>
+                                <li><a href="#">Category Name</a>
+                                </li>
+                            </ul>
+                        </div-->
+                    </div>
+                    <!-- /.row -->
+                </div>
+
+                <!-- Side Widget Well -->
+                <div class="well">
+                    <h4>Side Widget Well</h4>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Inventore, perspiciatis adipisci accusamus laudantium odit aliquam repellat tempore quos aspernatur vero.</p>
+                </div>
+
+            </div>
+
+        </div>
+        <!-- /.row -->
+
+        <hr>
+
+        <!-- Footer -->
+        <footer>
+            <div class="row">
+                <div class="col-lg-12">
+                    <p>Copyright &copy; http://apps-pratiks.rhcloud.com 2014</p>
+                </div>
+            </div>
+            <!-- /.row -->
+        </footer>
+
+    </div>
+    <!-- /.container -->
+
+    <!-- jQuery -->
+    <script src="../../../bootstrap/js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="../../../bootstrap/js/bootstrap.min.js"></script>
+
+</body>
+
+</html>

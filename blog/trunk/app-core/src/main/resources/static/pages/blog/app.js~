@@ -1,0 +1,27 @@
+var blogs = new Array();
+
+$(document).ready(function(){console.log(formatDate(new Date()));
+    $.ajax({url: "http://localhost:8080/app/rest/blogs/", success: function(result){
+        console.log(result);
+        blogs = result;
+        $("#blogEntry").html(createBlogEntry(blogs[0]));
+    }});
+});
+
+
+function createBlogEntry(blog) {
+	return '<h2><a href="./startbootstrap-blog-post-1.0.3/sandakphu-revisited.html">'+blog.content
+	+'</a></h2> <p class="lead">by <a href="index.php">'+blog.createdBy+'</a>        </p>        <p><span class="glyphicon glyphicon-time"></span> Posted on '
+	+formatDate(blog.created)+'</p><hr><img class="img-responsive" '+
+	'src="https://lh5.googleusercontent.com/-8Y49mowRXB4/VP3pzHIKqaI/AAAAAAAACyo/WctaWpmKEbQ/w1341-h894-no/DSC_0438.JPG" alt="">'+
+	'<hr>   <a class="btn btn-primary" href="./blog-post/'+blog.id+'">Read More <span class="glyphicon glyphicon-chevron-right"></span></a><hr>';
+}
+
+var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+var AM_PM = ['AM', 'PM'];
+
+function formatDate(date) {
+	var hour = (date.getHours()%12)<10?'0'+date.getHours():date.getHours();
+	var min = date.getMinutes()<10?'0'+date.getMinutes():date.getMinutes();
+	return MONTHS[date.getMonth()] +' '+date.getDate()+', '+date.getFullYear()+' '+hour+':'+min+' '+AM_PM[parseInt(date.getHours()/12)];
+}
